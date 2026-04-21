@@ -10,6 +10,8 @@ class EbookGenerator {
         this.titleInput = document.getElementById('ebook-title');
         this.charCount = document.getElementById('char-count');
         this.genreSelect = document.getElementById('genre');
+        this.lengthSelect = document.getElementById('length');
+        this.toneSelect = document.getElementById('tone');
         this.coverStyleSelect = document.getElementById('cover-style');
         this.coverColorSelect = document.getElementById('cover-color');
         this.generateBtn = document.getElementById('generate-btn');
@@ -216,16 +218,26 @@ class EbookGenerator {
         };
 
         const chapterCounts = {
-            short: 3,
-            medium: 5,
-            long: 8
+            short: { min: 3, max: 5 },
+            medium: { min: 5, max: 8 },
+            long: { min: 8, max: 12 }
         };
 
         const wordCount = this.getRandomInt(wordCounts[length].min, wordCounts[length].max);
-        const chapterCount = chapterCounts[length];
-        const pageCount = Math.ceil(wordCount / 250); // ~250 mots par page
+        const chapterCount = this.getRandomInt(chapterCounts[length].min, chapterCounts[length].max);
+        const wordsPerChapter = Math.floor(wordCount / chapterCount);
 
-        const chapters = this.generateChapters(title, genre, chapterCount, tone, wordCount);
+        const chapters = [];
+        for (let i = 0; i < chapterCount; i++) {
+            const chapterTitle = this.generateChapterTitle(genre, i + 1);
+            const chapterContent = this.generateChapterContent(genre, tone, wordsPerChapter);
+            chapters.push({
+                title: chapterTitle,
+                content: chapterContent
+            });
+        }
+
+        const pageCount = Math.ceil(wordCount / 300); // ~300 mots par page
 
         return {
             title,
@@ -233,136 +245,79 @@ class EbookGenerator {
             length,
             tone,
             wordCount,
-            pageCount,
             chapterCount,
+            pageCount,
             chapters,
             createdAt: new Date().toISOString()
         };
     }
 
-    generateChapters(title, genre, chapterCount, tone, totalWords) {
-        const chapters = [];
-        const wordsPerChapter = Math.floor(totalWords / chapterCount);
-
-        const chapterTemplates = {
-            'fiction': [
-                'Le début de l\'aventure',
-                'La rencontre décisive',
-                'Le premier obstacle',
-                'La révélation surprenante',
-                'Le tournant dramatique',
-                'La confrontation finale',
-                'La résolution',
-                'L\'épilogue'
+    generateChapterTitle(genre, chapterNumber) {
+        const templates = {
+            "fiction": [
+                `Chapitre ${chapterNumber}: La Découverte`,
+                `Chapitre ${chapterNumber}: Le Tournant`,
+                `Chapitre ${chapterNumber}: La Révélation`,
+                `Chapitre ${chapterNumber}: L'Épreuve`,
+                `Chapitre ${chapterNumber}: La Transformation`
             ],
-            'non-fiction': [
-                'Introduction',
-                'Les fondements',
-                'Les principes clés',
-                'Les applications pratiques',
-                'Les études de cas',
-                'Les meilleures pratiques',
-                'Les perspectives futures',
-                'Conclusion'
+            "non-fiction": [
+                `Chapitre ${chapterNumber}: Les Fondamentaux`,
+                `Chapitre ${chapterNumber}: Les Applications`,
+                `Chapitre ${chapterNumber}: Les Perspectives`,
+                `Chapitre ${chapterNumber}: Les Défis`,
+                `Chapitre ${chapterNumber}: Les Solutions`
             ],
-            'science-fiction': [
-                'L\'anomalie spatiale',
-                'La découverte',
-                'Le premier contact',
-                'La technologie inconnue',
-                'Le voyage interstellaire',
-                'La civilisation perdue',
-                'Le retour sur Terre',
-                'Le nouveau monde'
+            "science-fiction": [
+                `Chapitre ${chapterNumber}: Le Nouveau Monde`,
+                `Chapitre ${chapterNumber}: La Technologie`,
+                `Chapitre ${chapterNumber}: Le Conflit`,
+                `Chapitre ${chapterNumber}: L'Évolution`,
+                `Chapitre ${chapterNumber}: L'Avenir`
             ],
-            'fantasy': [
-                'L\'appel du destin',
-                'Le royaume oublié',
-                'La quête sacrée',
-                'Les créatures mystiques',
-                'L\'épreuve du courage',
-                'La bataille épique',
-                'Le pouvoir ancien',
-                'Le couronnement'
+            "fantasy": [
+                `Chapitre ${chapterNumber}: La Quête`,
+                `Chapitre ${chapterNumber}: La Magie`,
+                `Chapitre ${chapterNumber}: Le Combat`,
+                `Chapitre ${chapterNumber}: L'Alliance`,
+                `Chapitre ${chapterNumber}: La Victoire`
             ],
-            'romance': [
-                'La rencontre fortuite',
-                'Le premier regard',
-                'Les doutes et les espoirs',
-                'Le rapprochement',
-                'L\'obstacle familial',
-                'La déclaration',
-                'Le choix du cœur',
-                'Le happy end'
+            "romance": [
+                `Chapitre ${chapterNumber}: La Rencontre`,
+                `Chapitre ${chapterNumber}: Le Rapprochement`,
+                `Chapitre ${chapterNumber}: Les Émotions`,
+                `Chapitre ${chapterNumber}: Les Défis`,
+                `Chapitre ${chapterNumber}: L'Amour`
             ],
-            'thriller': [
-                'L\'incident déclencheur',
-                'La première enquête',
-                'Les pistes mystérieuses',
-                'Le danger imminent',
-                'La traque',
-                'La confrontation',
-                'La vérité révélée',
-                'La justice rendue'
+            "thriller": [
+                `Chapitre ${chapterNumber}: L'Enquête`,
+                `Chapitre ${chapterNumber}: Les Indices`,
+                `Chapitre ${chapterNumber}: Le Danger`,
+                `Chapitre ${chapterNumber}: La Poursuite`,
+                `Chapitre ${chapterNumber}: La Vérité`
             ],
-            'biography': [
-                'Les origines',
-                'L\'enfance formatrice',
-                'Les premières ambitions',
-                'Les défis surmontés',
-                'Le succès',
-                'Les épreuves',
-                'L\'héritage',
-                'La postérité'
+            "biography": [
+                `Chapitre ${chapterNumber}: Les Origines`,
+                `Chapitre ${chapterNumber}: Les Débuts`,
+                `Chapitre ${chapterNumber}: Les Succès`,
+                `Chapitre ${chapterNumber}: Les Épreuves`,
+                `Chapitre ${chapterNumber}: L'Héritage`
             ],
-            'self-help': [
-                'Comprendre le problème',
-                'Les bases du changement',
-                'Les stratégies efficaces',
-                'Les exercices pratiques',
-                'Surmonter les obstacles',
-                'Maintenir la motivation',
-                'Mesurer les progrès',
-                'Le plan d\'action'
+            "self-help": [
+                `Chapitre ${chapterNumber}: La Prise de Conscience`,
+                `Chapitre ${chapterNumber}: Les Stratégies`,
+                `Chapitre ${chapterNumber}: Les Actions`,
+                `Chapitre ${chapterNumber}: Les Résultats`,
+                `Chapitre ${chapterNumber}: La Transformation`
             ]
         };
 
-        const templates = chapterTemplates[genre] || chapterTemplates['fiction'];
-        const toneModifiers = {
-            'formal': 'de manière structurée et professionnelle',
-            'casual': 'avec un style décontracté et accessible',
-            'humorous': 'avec une touche d\'humour et de légèreté',
-            'dramatic': 'avec intensité et émotion',
-            'inspiring': 'avec inspiration et motivation'
-        };
-
-        for (let i = 0; i < chapterCount; i++) {
-            const chapterTitle = templates[i] || `Chapitre ${i + 1}`;
-            const content = this.generateChapterContent(
-                title, 
-                chapterTitle, 
-                genre, 
-                tone, 
-                wordsPerChapter,
-                toneModifiers[tone]
-            );
-            
-            chapters.push({
-                title: chapterTitle,
-                content: content
-            });
-        }
-
-        return chapters;
+        const genreTemplates = templates[genre] || templates["fiction"];
+        return genreTemplates[chapterNumber - 1] || `Chapitre ${chapterNumber}`;
     }
 
-    generateChapterContent(bookTitle, chapterTitle, genre, tone, wordCount, toneModifier) {
-        const openingSentences = [
-            `Dans ce chapitre, nous explorons ${chapterTitle.toLowerCase()} ${toneModifier}.`,
-            `Ce chapitre se concentre sur ${chapterTitle.toLowerCase()}, abordant le sujet ${toneModifier}.`,
-            `Nous plongeons maintenant dans ${chapterTitle.toLowerCase()}, avec une approche ${toneModifier}.`
-        ];
-
+    generateChapterContent(genre, tone, wordCount) {
+        const openingSentences = this.generateOpeningSentences(genre, tone);
         const middleContent = this.generateMiddleContent(genre, tone, Math.floor(wordCount * 0.6));
         const conclusion = [
             `Cette section nous amène naturellement vers la suite de notre exploration.`,
@@ -371,6 +326,32 @@ class EbookGenerator {
         ];
 
         return `${openingSentences[Math.floor(Math.random() * openingSentences.length)]}\n\n${middleContent}\n\n${conclusion[Math.floor(Math.random() * conclusion.length)]}`;
+    }
+
+    generateOpeningSentences(genre, tone) {
+        const toneModifiers = {
+            "formel": ["De manière rigoureuse", "Selon une analyse approfondie", "Dans une perspective académique"],
+            "decontracte": ["Imaginez", "Vous savez", "Il faut dire que"],
+            "humoristique": ["C'est drôle comme", "Rigolez pas", "Sans blague"],
+            "dramatique": ["Soudainement", "Dans un silence assourdissant", "Le destin en a décidé ainsi"],
+            "inspirant": ["Imaginez un monde où", "Chaque jour est une opportunité", "Votre potentiel est illimité"]
+        };
+
+        const genreOpenings = {
+            "fiction": ["L'histoire commence", "Dans un lointain royaume", "Il était une fois"],
+            "non-fiction": ["Les recherches montrent", "Les données indiquent", "Les experts s'accordent"],
+            "science-fiction": ["En l'an 2150", "Sur la planète X-9", "Les technologies du futur"],
+            "fantasy": ["Dans le royaume magique", "Les anciennes prophéties", "La magie ancienne"],
+            "romance": ["Leurs regards se sont croisés", "C'était un soir d'été", "Le destin les a réunis"],
+            "thriller": ["L'enquête a commencé", "Le téléphone a sonné", "La nuit était tombée"],
+            "biography": ["Né dans une famille modeste", "Dès son plus jeune âge", "Les débuts furent difficiles"],
+            "self-help": ["Le changement commence", "Votre voyage", "La première étape"]
+        };
+
+        const modifiers = toneModifiers[tone] || toneModifiers["formel"];
+        const openings = genreOpenings[genre] || genreOpenings["fiction"];
+
+        return openings.map(opening => `${modifiers[Math.floor(Math.random() * modifiers.length)]}, ${opening.toLowerCase()}.`);
     }
 
     generateMiddleContent(genre, tone, wordCount) {
@@ -394,11 +375,13 @@ class EbookGenerator {
                 content.push(baseContent);
             } else {
                 const variations = [
-                    'Cette approche permet de mieux comprendre les enjeux actuels.',
-                    'Les implications de cette analyse sont profondes et durables.',
-                    'Il est essentiel de considérer ces différents aspects dans leur ensemble.',
-                    'Cette perspective offre un éclairage nouveau sur la situation.',
-                    'Les résultats obtenus dépassent les attentes initiales.'
+                    "Cette approche permet de mieux comprendre les enjeux actuels.",
+                    "Les implications de cette analyse sont profondes et durables.",
+                    "Dans cette perspective, il devient évident que...",
+                    "Les conséquences de cette situation sont multiples.",
+                    "Il convient d'examiner attentivement ces éléments.",
+                    "Cette dynamique mérite une attention particulière.",
+                    "Les interactions complexes entre ces facteurs sont fascinantes."
                 ];
                 content.push(variations[Math.floor(Math.random() * variations.length)]);
             }
@@ -407,175 +390,7 @@ class EbookGenerator {
         return content.join(' ');
     }
 
-    displayResults() {
-        if (!this.currentEbook) return;
-
-        // Mettre à jour les informations de l'ebook
-        document.getElementById('preview-title').textContent = this.currentEbook.title;
-        document.getElementById('preview-meta').textContent = `${this.currentEbook.genre} • ${this.currentEbook.length} • ${this.currentEbook.tone}`;
-        document.getElementById('word-count').textContent = this.currentEbook.wordCount.toLocaleString();
-        document.getElementById('page-count').textContent = this.currentEbook.pageCount;
-        document.getElementById('chapter-count').textContent = this.currentEbook.chapterCount;
-
-        // Afficher un aperçu du contenu
-        const preview = this.currentEbook.chapters[0]?.content.substring(0, 300) + '...' || '';
-        document.getElementById('content-preview').textContent = preview;
-
-        // Afficher la section des résultats
-        this.generatorSection.style.display = 'none';
-        this.resultSection.style.display = 'block';
-    }
-
-    downloadEbook(format) {
-        if (!this.currentEbook) return;
-
-        let content, filename, mimeType;
-
-        switch (format) {
-            case 'txt':
-                content = this.generateTextContent();
-                filename = `${this.currentEbook.title}.txt`;
-                mimeType = 'text/plain';
-                break;
-            case 'pdf':
-                content = this.generatePDFContent();
-                filename = `${this.currentEbook.title}.pdf`;
-                mimeType = 'application/pdf';
-                break;
-            case 'epub':
-                content = this.generateEPUBContent();
-                filename = `${this.currentEbook.title}.epub`;
-                mimeType = 'application/epub+zip';
-                break;
-            default:
-                return;
-        }
-
-        this.downloadFile(content, filename, mimeType);
-    }
-
-    generateTextContent() {
-        let content = `${this.currentEbook.title}\n`;
-        content += `Genre: ${this.currentEbook.genre}\n`;
-        content += `Longueur: ${this.currentEbook.length}\n`;
-        content += `Ton: ${this.currentEbook.tone}\n`;
-        content += `Créé le: ${new Date(this.currentEbook.createdAt).toLocaleDateString()}\n\n`;
-        content += '=' .repeat(50) + '\n\n';
-
-        this.currentEbook.chapters.forEach((chapter, index) => {
-            content += `Chapitre ${index + 1}: ${chapter.title}\n\n`;
-            content += chapter.content + '\n\n';
-            content += '-'.repeat(30) + '\n\n';
-        });
-
-        return content;
-    }
-
-    generatePDFContent() {
-        // Pour l'instant, nous générons du contenu HTML simple
-        // Dans une version réelle, vous utiliseriez une bibliothèque comme jsPDF
-        let content = `
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <title>${this.currentEbook.title}</title>
-            <style>
-                body { font-family: Arial, sans-serif; margin: 40px; }
-                h1 { text-align: center; color: #333; }
-                h2 { color: #666; border-bottom: 1px solid #ccc; }
-                .meta { text-align: center; color: #888; margin-bottom: 30px; }
-            </style>
-        </head>
-        <body>
-            <h1>${this.currentEbook.title}</h1>
-            <div class="meta">
-                <p>Genre: ${this.currentEbook.genre} | Longueur: ${this.currentEbook.length} | Ton: ${this.currentEbook.tone}</p>
-                <p>Créé le: ${new Date(this.currentEbook.createdAt).toLocaleDateString()}</p>
-            </div>
-        `;
-
-        this.currentEbook.chapters.forEach((chapter, index) => {
-            content += `<h2>Chapitre ${index + 1}: ${chapter.title}</h2>`;
-            content += `<p>${chapter.content.replace(/\n/g, '</p><p>')}</p>`;
-        });
-
-        content += '</body></html>';
-        return content;
-    }
-
-    generateEPUBContent() {
-        // Pour l'instant, nous retournons le contenu texte
-        // Dans une version réelle, vous créeriez une structure EPUB valide
-        return this.generateTextContent();
-    }
-
-    downloadFile(content, filename, mimeType) {
-        const blob = new Blob([content], { type: mimeType });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = filename;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-    }
-
-    resetForm() {
-        this.titleInput.value = '';
-        this.charCount.textContent = '0';
-        this.genreSelect.value = 'fiction';
-        this.lengthSelect.value = 'short';
-        this.toneSelect.value = 'formal';
-        this.generateBtn.disabled = true;
-        this.currentEbook = null;
-
-        this.generatorSection.style.display = 'block';
-        this.resultSection.style.display = 'none';
-    }
-
-    showLoading(show) {
-        if (show) {
-            this.btnText.style.display = 'none';
-            this.btnLoader.style.display = 'inline';
-            this.generateBtn.disabled = true;
-        } else {
-            this.btnText.style.display = 'inline';
-            this.btnLoader.style.display = 'none';
-            this.generateBtn.disabled = this.titleInput.value.trim().length === 0;
-        }
-    }
-
-    showError(message) {
-        // Créer un élément d'erreur
-        const errorDiv = document.createElement('div');
-        errorDiv.className = 'error-message';
-        errorDiv.textContent = message;
-        errorDiv.style.cssText = `
-            background: #fef2f2;
-            color: #dc2626;
-            padding: 1rem;
-            border-radius: 8px;
-            margin-top: 1rem;
-            border: 1px solid #fecaca;
-        `;
-
-        this.generatorSection.appendChild(errorDiv);
-
-        // Supprimer après 3 secondes
-        setTimeout(() => {
-            if (errorDiv.parentNode) {
-                errorDiv.parentNode.removeChild(errorDiv);
-            }
-        }, 3000);
-    }
-
-    getRandomInt(min, max) {
-        return Math.floor(Math.random() * (max - min + 1)) + min;
-    }
-}
-
-backToForm() {
+    backToForm() {
         this.paymentSection.style.display = 'none';
         this.generatorSection.style.display = 'block';
         this.paymentErrors.textContent = '';
@@ -757,7 +572,7 @@ backToForm() {
 
         // Ornement
         ctx.font = '24px serif';
-        ctx.fillText('❦', 150, 320);
+        ctx.fillText('â¦', 150, 320);
     }
 
     wrapText(ctx, text, x, y, maxWidth, lineHeight) {
@@ -855,7 +670,7 @@ backToForm() {
         content += `Longueur: ${this.currentEbook.length}\n`;
         content += `Ton: ${this.currentEbook.tone}\n`;
         content += `Créé le: ${new Date(this.currentEbook.createdAt).toLocaleDateString()}\n\n`;
-        content += '=' .repeat(50) + '\n\n';
+        content += '='.repeat(50) + '\n\n';
 
         this.currentEbook.chapters.forEach((chapter, index) => {
             content += `Chapitre ${index + 1}: ${chapter.title}\n\n`;
@@ -937,6 +752,42 @@ backToForm() {
         this.paymentSection.style.display = 'none';
         this.resultSection.style.display = 'none';
         this.paymentErrors.textContent = '';
+    }
+
+    showLoading(show) {
+        if (show) {
+            this.btnText.style.display = 'none';
+            this.btnLoader.style.display = 'inline';
+            this.generateBtn.disabled = true;
+        } else {
+            this.btnText.style.display = 'inline';
+            this.btnLoader.style.display = 'none';
+            this.generateBtn.disabled = this.titleInput.value.trim().length === 0;
+        }
+    }
+
+    showError(message) {
+        // Créer un élément d'erreur
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'error-message';
+        errorDiv.textContent = message;
+        errorDiv.style.cssText = `
+            background: #fef2f2;
+            color: #dc2626;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            border: 1px solid #fecaca;
+        `;
+
+        this.generatorSection.appendChild(errorDiv);
+
+        // Supprimer après 3 secondes
+        setTimeout(() => {
+            if (errorDiv.parentNode) {
+                errorDiv.parentNode.removeChild(errorDiv);
+            }
+        }, 3000);
     }
 
     getRandomInt(min, max) {
