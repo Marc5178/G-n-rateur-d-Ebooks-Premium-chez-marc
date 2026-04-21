@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Générateur d'Ebooks Automatique chez marc</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 class="title">📚 Générateur d'Ebooks Premium chez marc</h1>
+            <p class="subtitle">Créez des ebooks professionnels avec couvertures personnalisées</p>
+            <div class="trial-banner">
+                <span class="trial-tag">🎉 Période d'essai GRATUITE</span>
+                <span class="trial-info">Générez illimité d'ebooks pendant l'essai !</span>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div class="generator-section">
+                <div class="input-group">
+                    <label for="ebook-title" class="label">Titre de l'ebook</label>
+                    <input 
+                        type="text" 
+                        id="ebook-title" 
+                        class="input-field" 
+                        placeholder="Entrez le titre de votre ebook..."
+                        maxlength="100"
+                    >
+                    <div class="char-count">
+                        <span id="char-count">0</span>/100 caractères
+                    </div>
+                </div>
+
+                <div class="options-group">
+                    <h3 class="options-title">Options de génération</h3>
+                    
+                    <div class="option-item">
+                        <label for="genre" class="option-label">Genre</label>
+                        <select id="genre" class="select-field">
+                            <option value="fiction">Fiction</option>
+                            <option value="non-fiction">Non-fiction</option>
+                            <option value="science-fiction">Science-fiction</option>
+                            <option value="fantasy">Fantasy</option>
+                            <option value="romance">Romance</option>
+                            <option value="thriller">Thriller</option>
+                            <option value="biography">Biographie</option>
+                            <option value="self-help">Développement personnel</option>
+                        </select>
+                    </div>
+
+                    <div class="option-item">
+                        <label for="length" class="option-label">Longueur</label>
+                        <select id="length" class="select-field">
+                            <option value="short">Court (1000-2000 mots)</option>
+                            <option value="medium">Moyen (3000-5000 mots)</option>
+                            <option value="long">Long (6000-10000 mots)</option>
+                        </select>
+                    </div>
+
+                    <div class="option-item">
+                        <label for="tone" class="option-label">Ton</label>
+                        <select id="tone" class="select-field">
+                            <option value="formel">Formel</option>
+                            <option value="decontracte">Décontracté</option>
+                            <option value="humoristique">Humoristique</option>
+                            <option value="dramatique">Dramatique</option>
+                            <option value="inspirant">Inspirant</option>
+                        </select>
+                    </div>
+
+                    <div class="option-item">
+                        <label for="cover-style" class="option-label">Style de couverture</label>
+                        <select id="cover-style" class="select-field">
+                            <option value="modern">Moderne</option>
+                            <option value="classic">Classique</option>
+                            <option value="minimalist">Minimaliste</option>
+                            <option value="bold">Audacieux</option>
+                            <option value="elegant">Élégant</option>
+                        </select>
+                    </div>
+
+                    <div class="option-item">
+                        <label for="cover-color" class="option-label">Couleur principale</label>
+                        <select id="cover-color" class="select-field">
+                            <option value="#6366f1">Bleu</option>
+                            <option value="#dc2626">Rouge</option>
+                            <option value="#059669">Vert</option>
+                            <option value="#7c3aed">Violet</option>
+                            <option value="#ea580c">Orange</option>
+                            <option value="#0891b2">Cyan</option>
+                            <option value="#be185d">Rose</option>
+                            <option value="#1f2937">Gris foncé</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="trial-section">
+                    <div class="trial-info-box">
+                        <h3>🎉 Mode Essai Gratuit Activé</h3>
+                        <p>Générez des ebooks illimités sans paiement pendant la période d'essai !</p>
+                        <div class="trial-features">
+                            <div class="feature-item">
+                                <span class="feature-icon">✅</span>
+                                <span>Génération illimitée d'ebooks</span>
+                            </div>
+                            <div class="feature-item">
+                                <span class="feature-icon">✅</span>
+                                <span>Tous les styles de couverture</span>
+                            </div>
+                            <div class="feature-item">
+                                <span class="feature-icon">✅</span>
+                                <span>Téléchargement en tous formats</span>
+                            </div>
+                            <div class="feature-item">
+                                <span class="feature-icon">✅</span>
+                                <span>Aucune carte de crédit requise</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button id="generate-btn" class="generate-btn trial-btn" disabled>
+                    <span class="btn-text">Générer mon ebook gratuitement</span>
+                    <span class="btn-loader" style="display: none;">Génération en cours...</span>
+                </button>
+            </div>
+
+            <div id="payment-section" class="payment-section" style="display: none;">
+                <h2 class="payment-title">💳 Finaliser votre commande</h2>
+                
+                <div class="payment-summary">
+                    <h3>Récapitulatif de votre ebook</h3>
+                    <div class="summary-item">
+                        <span class="summary-label">Titre:</span>
+                        <span id="summary-title" class="summary-value"></span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Genre:</span>
+                        <span id="summary-genre" class="summary-value"></span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Longueur:</span>
+                        <span id="summary-length" class="summary-value"></span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Style de couverture:</span>
+                        <span id="summary-cover" class="summary-value"></span>
+                    </div>
+                    <div class="summary-total">
+                        <span class="total-label">Total:</span>
+                        <span class="total-amount">9.99€</span>
+                    </div>
+                </div>
+
+                <div class="payment-form">
+                    <h3>Informations de paiement Mobile Money</h3>
+                    <form id="payment-form">
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" required placeholder="votre@email.com">
+                        </div>
+                        
+                        <div class="momo-options">
+                            <h4>Choisissez votre opérateur Mobile Money</h4>
+                            <div class="momo-providers">
+                                <label class="momo-provider">
+                                    <input type="radio" name="momo-provider" value="orange" checked>
+                                    <div class="provider-card orange">
+                                        <span class="provider-icon">🟠</span>
+                                        <span class="provider-name">Orange Money</span>
+                                    </div>
+                                </label>
+                                
+                                <label class="momo-provider">
+                                    <input type="radio" name="momo-provider" value="mtn">
+                                    <div class="provider-card mtn">
+                                        <span class="provider-icon">🟡</span>
+                                        <span class="provider-name">MTN Mobile Money</span>
+                                    </div>
+                                </label>
+                                
+                                <label class="momo-provider">
+                                    <input type="radio" name="momo-provider" value="moov">
+                                    <div class="provider-card moov">
+                                        <span class="provider-icon">💜</span>
+                                        <span class="provider-name">Moov Money</span>
+                                    </div>
+                                </label>
+                                
+                                <label class="momo-provider">
+                                    <input type="radio" name="momo-provider" value="wave">
+                                    <div class="provider-card wave">
+                                        <span class="provider-icon">🌊</span>
+                                        <span class="provider-name">Wave</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="phone-number">Numéro de téléphone</label>
+                            <input type="tel" id="phone-number" required placeholder="+226 XX XX XX XX" pattern="[+][0-9]{1,4}[0-9]{6,14}">
+                            <small>Format: +226 suivi de votre numéro</small>
+                        </div>
+                        
+                        <div class="payment-instructions">
+                            <h4>Instructions de paiement</h4>
+                            <ol>
+                                <li>Cliquez sur "Payer avec MoMo"</li>
+                                <li>Vous recevrez une notification sur votre téléphone</li>
+                                <li>Confirmez le paiement avec votre code PIN</li>
+                                <li>Attendez la confirmation de paiement</li>
+                            </ol>
+                        </div>
+                        
+                        <button type="submit" id="submit-payment" class="payment-btn">
+                            <span class="btn-text">Payer 9.99€ avec MoMo</span>
+                            <span class="btn-loader" style="display: none;">Paiement en cours...</span>
+                        </button>
+                        <div id="payment-errors" class="payment-errors" role="alert"></div>
+                    </form>
+                </div>
+
+                <div class="security-info">
+                    <p>� Paiement 100% sécurisé via Mobile Money</p>
+                    <p>📧 Ebook envoyé à votre email après paiement</p>
+                    <p>💯 Satisfaction garantie ou remboursement</p>
+                    <p>⚡ Paiement instantané et sans frais</p>
+                </div>
+
+                <button id="back-to-form" class="back-btn">
+                    ← Retour à la personnalisation
+                </button>
+            </div>
+
+            <div id="result-section" class="result-section" style="display: none;">
+                <h2 class="result-title">🎉 Votre ebook est prêt !</h2>
+                
+                <div class="trial-success">
+                    <p>🎊 Généré GRATUITEMENT pendant votre essai !</p>
+                    <p>Profitez de toutes les fonctionnalités sans limitation</p>
+                </div>
+                
+                <div class="ebook-preview">
+                    <div class="ebook-cover">
+                        <canvas id="cover-canvas" width="300" height="450" style="max-width: 100%; height: auto;"></canvas>
+                    </div>
+                    
+                    <div class="ebook-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">Mots:</span>
+                            <span id="word-count" class="stat-value">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Pages:</span>
+                            <span id="page-count" class="stat-value">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Chapitres:</span>
+                            <span id="chapter-count" class="stat-value">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Format:</span>
+                            <span id="format-count" class="stat-value">PDF + EPUB + TXT</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="preview-section">
+                    <h4>Aperçu du contenu</h4>
+                    <div id="content-preview" class="content-preview"></div>
+                </div>
+
+                <div class="download-section">
+                    <h4>📥 Télécharger votre ebook complet</h4>
+                    <div class="download-buttons">
+                        <button id="download-pdf" class="download-btn pdf-btn">
+                            📄 Télécharger en PDF (avec couverture)
+                        </button>
+                        <button id="download-epub" class="download-btn epub-btn">
+                            📱 Télécharger en EPUB (avec couverture)
+                        </button>
+                        <button id="download-txt" class="download-btn txt-btn">
+                            📝 Télécharger en TXT
+                        </button>
+                        <button id="download-cover" class="download-btn cover-btn">
+                            🎨 Télécharger la couverture séparément
+                        </button>
+                    </div>
+                </div>
+
+                <div class="success-message">
+                    <p>✅ Paiement réussi ! Votre ebook a été généré avec succès.</p>
+                    <p>📧 Un email de confirmation vous a été envoyé.</p>
+                </div>
+
+                <button id="new-ebook-btn" class="new-ebook-btn">
+                    Créer un nouvel ebook
+                </button>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <p>&copy; 2024 Générateur d'Ebooks Automatique chez marc. Créé avec ❤️</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
